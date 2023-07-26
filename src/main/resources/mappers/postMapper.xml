@@ -63,4 +63,21 @@
 			`userId` = #{userId}
 			AND `id` = #{postId}
  	</select>
+ 	
+ 	<update id="updatePostByPostIdAndUserId" parameterType="map">
+ 		UPDATE `post`
+ 		SET
+ 			`subject` = #{subject}
+ 			, `content` = #{content}
+ 			<!--  imagePath가 있을 때만 수정하고, 없을때는 기존이미지 그대로 사용 -->
+ 			<if test="imagePath != null">
+ 			, `imagePath` = #{imagePath}
+ 			</if>
+ 			, updatedAt = NOW()
+ 		WHERE
+ 			`id` = #{postId}
+ 			AND `userId` = #{userId}
+ 	
+ 	
+ 	</update>
  </mapper>

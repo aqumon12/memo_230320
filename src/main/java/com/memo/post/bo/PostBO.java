@@ -2,6 +2,8 @@ package com.memo.post.bo;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +14,9 @@ import com.memo.post.domain.Post;
 
 @Service
 public class PostBO {
+	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+	//private Logger logger = LoggerFactory.getLogger(PostBO.class);
 	
 	@Autowired
 	private PostMapper postMapper; // mybatis
@@ -40,5 +45,34 @@ public class PostBO {
 	
 	public Post getPostByPostIdAndUserId(int postId, int userId) {
 		return postMapper.selectPostByPostIdAndUserId(postId, userId);
+	}
+	
+	public void updatePost(int userId, String userLoginId,
+			int postId, String subject, String content, 
+			MultipartFile file) {
+		
+		// 업데이트 대상인 기존 글을 가져와본다. (validation, 이미지 교체시 기존 이미지 제거를 위해서)
+		Post post = postMapper.selectPostByPostIdAndUserId(postId, userId);
+		if (post == null) {
+			logger.warn("###[글 수정] post is null. postId:{}, userId:{}", postId, userId);
+			return;
+		}
+		// 파일이 비어있지 않다면 업로드 후 imagePath 얻어옴
+		// 업로드가 성공하면 기존 이미지 제거
+		String imagePath = null;
+		
+		if (file != null) {
+			// 업로드
+			imagePath = fileManager.saveFile(userLoginId, file);
+			
+			// 기존 이미지 제거
+			// -- 업로드가 성공 했고, 기존 이미지 존재하는 경우
+			if (imagePath != null && post.getImagePath() != null) {
+				// 이미지 제거
+				fileManager.deleteFile(post.getImagePath());
+			}
+		}
+		// 글 업데이트
+		postMapper.updatePostByPostIdAndUserId(postId, userId, subject, content, imagePath);
 	}
 }

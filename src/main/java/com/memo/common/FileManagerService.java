@@ -6,15 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component // 일반적인 spring bean
 public class FileManagerService {
-	
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	// 실제 업로드가 된 이미지가 저장될 경로(서버)
-	public static final String FILE_UPLOAD_PATH = "C:\\Users\\ASUS\\Desktop\\HSM\\6_spring_project\\memo\\workspace\\images/";
+	public static final String FILE_UPLOAD_PATH = "D:\\hyunsangmin\\6_spring_project\\memo\\workspace\\images/";
 	
 	// input: MultipartFile(이미지 파일), loginId
 	// output: web image path(String)
@@ -37,7 +39,6 @@ public class FileManagerService {
 			Path path = Paths.get(filePath + file.getOriginalFilename()); // 디렉토리 경로 + 사용자가 올린 파일명
 			Files.write(path, bytes); // 파일 업로드
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null; // 이미지 업로드 실패 시 null 리턴
 		}
@@ -45,5 +46,32 @@ public class FileManagerService {
 		//  파일 업로드가 성공했으면 웹 이미지 url path를 리턴한다.
 		//  /images/aaaa_151231231/sun.jpg
 		return "/images/" + directoryName + file.getOriginalFilename();
+	}
+	
+	// 파일 삭제
+	// input: imagePath
+	// output: void
+	public void deleteFile(String imagePath) { // imagePath: /images/aaaa_1689924166738/스크린샷(1).png
+		//D:\\hyunsangmin\\6_spring_project\\memo\\workspace\\images//images/aaaa_1689924166738/스크린샷(1).png
+		// 주소에 겹치는 /images/ 를 제거한다.
+		Path path = Paths.get(FILE_UPLOAD_PATH + imagePath.replace("/images/", ""));
+		if (Files.exists(path)) { // 이미지가 존재하는가?
+			// 이미지 삭제
+			try {
+				Files.delete(path);
+			} catch (IOException e) {
+				logger.info("###[fileManegerService 이미지 삭제 실패] imagepath:{}", imagePath);
+			}
+			
+			// 디렉토리(폴더) 삭제
+			path = path.getParent();
+			if (Files.exists(path)) {
+				try {
+					Files.delete(path);
+				} catch (IOException e) {
+					logger.info("###[fileManegerService 이미지 폴더 삭제 실패] imagepath:{}", imagePath);
+				}
+			}
+		}
 	}
 }
