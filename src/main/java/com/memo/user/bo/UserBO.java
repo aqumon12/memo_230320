@@ -1,7 +1,5 @@
 package com.memo.user.bo;
 
-import javax.websocket.ClientEndpointConfig.Builder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

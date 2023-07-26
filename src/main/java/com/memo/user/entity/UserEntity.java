@@ -38,8 +38,6 @@ public class UserEntity {
 	
 	private String email;
 	
-	private String profileImagePath;
-	
 	@UpdateTimestamp
 	@Column(name="createdAt", updatable = false)
 	private ZonedDateTime createdAt;
