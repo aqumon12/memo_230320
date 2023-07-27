@@ -51,6 +51,15 @@ public class PostRestController {
 		return result;
 	}
 	
+	/**
+	 * 글수정 API
+	 * @param postId
+	 * @param subject
+	 * @param content
+	 * @param file
+	 * @param session
+	 * @return
+	 */
 	@PutMapping("/update")
 	public Map<String, Object> update(
 			@RequestParam("postId") int postId,
@@ -71,17 +80,22 @@ public class PostRestController {
 		return result;
 	}
 	
+	/**
+	 * 글삭제 API
+	 * @param postId
+	 * @param session
+	 * @return
+	 */
 	@DeleteMapping("/delete")
 	public Map<String, Object> delete(
 			@RequestParam("postId") int postId,
 			HttpSession session) {
 		
-		// 세션에서 userId, userLoginId 꺼내기 (file 업로드를 하려면 필요함)
+				// 세션에서 userId, userLoginId 꺼내기 (file 업로드를 하려면 필요함)
 				int userId = (int)session.getAttribute("userId");
-				String userLoginId = (String)session.getAttribute("userLoginId");
 				
 				// BO delete
-				postBO.deletePost(userId, userLoginId, postId);
+				postBO.deletePostByPostIdAndUserId(postId, userId);
 				
 				// 응답
 				Map<String, Object> result = new HashMap<>();

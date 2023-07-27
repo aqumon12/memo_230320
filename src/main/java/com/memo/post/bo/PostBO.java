@@ -76,14 +76,15 @@ public class PostBO {
 		postMapper.updatePostByPostIdAndUserId(postId, userId, subject, content, imagePath);
 	}
 	
-	public void deletePost(int userId, String userLoginId, int postId) {
-		// 이미지 삭제를 위해 글 불러오기
+	public void deletePostByPostIdAndUserId(int postId, int userId) {
+		// 이미지 삭제를 위해 기존 글 불러오기
 		Post post = postMapper.selectPostByPostIdAndUserId(postId, userId);
 		if (post == null) {
 			logger.warn("###[글 삭제] post is null. postId:{}, userId{}", postId, userId);
+			return;
 		}
 		
-		// 이미지가 존재하는 경우, 이미지 제거
+		// 기존 글에 이미지가 존재하는 경우, 이미지 제거
 		if (post.getImagePath() != null) {
 			fileManager.deleteFile(post.getImagePath());
 		}
