@@ -15,13 +15,13 @@
 </head>
 <body>
 	<div id="wrap">
-		<header class="bg-info">
+		<header class="bg-gray">
 			<jsp:include page="../include/header.jsp" />
 		</header>
-		<section class="contents bg-warning py-4">
+		<section class="contents py-4">
 			<jsp:include page="../${view}.jsp" />
 		</section>
-		<footer class="bg-info">
+		<footer class="bg-gray">
 			<jsp:include page="/WEB-INF/jsp/include/footer.jsp" />
 		</footer>
 	</div>
